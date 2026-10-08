@@ -1,0 +1,16 @@
+{
+  "name": "cooldown-companion",
+  "owner": {
+    "name": "BrawnyBravo"
+  },
+  "metadata": {
+    "description": "Companion mods for the Cooldown Stream Deck plugin."
+  },
+  "plugins": [
+    {
+      "name": "cooldown-usage-feed",
+      "source": "./cooldown-usage-feed",
+      "description": "Writes Claude Code's own five-hour and weekly usage figures to one small file for Cooldown. No sign-in or conversation data."
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "name": "cooldown-usage-feed",
+  "version": "0.1.0",
+  "description": "Writes Claude Code's own five-hour and weekly usage figures to one small file for the Cooldown Stream Deck plugin. No sign-in or conversation data."
+}
