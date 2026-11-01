@@ -12,8 +12,12 @@ const SLOW = { timeoutMs: 30000 };
 
 type Write = { path: string; text: string };
 
+// On a Linux runner the engine may resolve the Windows-style test home
+// against its own folder, so a write is matched from the test home onward.
 function norm(path: string) {
-  return path.split('\\').join('/');
+  const p = path.split('\\').join('/');
+  const at = p.indexOf('C:/Users/someone/');
+  return at >= 0 ? p.slice(at) : p;
 }
 
 function feedWrites(writes: Write[]) {
