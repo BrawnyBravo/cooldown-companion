@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # The Claude Code release the tests are held to. The weekly
+      # compatibility check runs the same tests against the newest release.
+      CLAUDE_CODE_VERSION: "2.1.316"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+
+      - name: Install Claude Code (inside this runner only)
+        run: |
+          npm install --no-save --no-fund --no-audit \
+            --prefix "$RUNNER_TEMP/claude-code" \
+            "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+          echo "$RUNNER_TEMP/claude-code/node_modules/.bin" >> "$GITHUB_PATH"
+
+      - name: Show version
+        run: claude --version
+
+      # Neither step signs in or needs an API key: validation reads the
+      # plugin's files, and the tests run the hooks against the engine's own
+      # test kit, which answers every call from the test itself.
+      - name: Validate the marketplace and the plugin
+        run: |
+          claude plugin validate .
+          claude plugin validate cooldown-usage-feed
+
+      - name: Run the hook tests
+        run: claude plugin test cooldown-usage-feed
