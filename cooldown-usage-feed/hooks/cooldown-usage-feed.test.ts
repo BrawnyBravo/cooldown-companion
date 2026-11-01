@@ -89,6 +89,20 @@ test('no five-hour reading yet leaves the last report alone and says why', SLOW,
   });
 });
 
+for (const [label, odd] of [
+  ['an object', { five_hour: FIVE }],
+  ['a string', 'five_hour'],
+  ['a number', 42],
+] as const) {
+  test(`a usage reading that is ${label}, not a list, is read as no windows, never thrown`, SLOW, async ($, on) => {
+    const writes: Write[] = [];
+    engine(on, odd, writes);
+    await $.session.measure(measure(['rateLimits']));
+    expect(feedWrites(writes).length).toBe(0);
+    expect(lastStatus(writes).status).toBe('no-five-hour');
+  });
+}
+
 test('a missing weekly window writes the five-hour one alone', SLOW, async ($, on) => {
   const writes: Write[] = [];
   engine(on, [FIVE], writes);

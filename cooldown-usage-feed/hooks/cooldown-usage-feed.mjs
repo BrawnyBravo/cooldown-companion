@@ -63,7 +63,8 @@ async function configFolder($) {
 }
 
 function pick(rateLimits, kind) {
-  const w = (rateLimits || []).find((r) => r && r.kind === kind);
+  // Anything but a list (an object, a string) reads as no window at all.
+  const w = (Array.isArray(rateLimits) ? rateLimits : []).find((r) => r && r.kind === kind);
   if (!w || typeof w.percentUsed !== "number" || typeof w.resetsAt !== "string") {
     return undefined;
   }
@@ -115,7 +116,8 @@ async function writeFeed($) {
     const reportedKinds = (Array.isArray(rateLimits) ? rateLimits : [])
       .map((r) => r && r.kind)
       .filter((k) => typeof k === "string")
-      .slice(0, 8);
+      .slice(0, 8)
+      .map((k) => k.slice(0, 32));
     await writeStatus($, folder, "no-five-hour", { reportedKinds });
     return;
   }
